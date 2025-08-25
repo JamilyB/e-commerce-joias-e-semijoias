@@ -1,7 +1,7 @@
-import ProductCard from "../components/modules/ProductCard";
-import { productData } from "../data/productData";
-import Header from "../components/modules/Header";
-import Filtro from "../components/modules/Filtro";
+import ProductCard from "../../components/modules/ProductCard";
+import { productData } from "../../data/productData";
+import Header from "../../components/modules/Header";
+import Filtro from "../../components/modules/Filtro";
 import React from "react";
 
 export default function ListagemPage() {
@@ -16,7 +16,7 @@ export default function ListagemPage() {
   return (
     <div>
       {/* Header fixo no topo */}
-      <Header />
+
 
       <div
         style={{

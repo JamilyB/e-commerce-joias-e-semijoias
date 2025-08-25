@@ -1,80 +1,131 @@
 import { useState } from "react";
-import { userData } from "../data/userData";
-import ModalEnderecos from "./ModalEnderecos";
-import ModalCartoes from "./ModalCartoes";
-import Button from "../components/elements/button";
-import { colors } from "../styles/colors";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { userData } from "../../data/userData";
+import ModalItem from "./ModalItem";
+import CardEndereco from "../../components/modules/CardEndereco";
+import CardCartao from "../../components/modules/CardCartao";
+import { colors } from "../../styles/colors";
+import CardPayProduct from "../../components/modules/CardPayProduct";
 
 export default function PayPage() {
   const [selectedEndereco, setSelectedEndereco] = useState(userData.enderecos[0]);
   const [selectedCartao, setSelectedCartao] = useState(userData.cartoes[0]);
+  const navigate = useNavigate();
 
-  // Mock de produtos no carrinho
   const cartItems = [
-    { id: 1, nome: "Brinco de Pérola", qtd: 2, valor: 49.9 },
-    { id: 2, nome: "Colar Dourado", qtd: 1, valor: 99.9 }
+    { id: 1, nome: "Brinco de Pérola", qtd: 2, valor: 49.9, imagem: "https://dummyimage.com/80x80/ccc/fff&text=Brinco" },
+    { id: 2, nome: "Colar Dourado", qtd: 1, valor: 99.9, imagem: "https://dummyimage.com/80x80/ccc/fff&text=Colar" }
   ];
 
   const total = cartItems.reduce((acc, item) => acc + item.qtd * item.valor, 0);
 
+  const handleFinalizar = () => {
+    toast.info("Processando pagamento...", {
+      position: "top-right",
+      autoClose: 2000,
+    });
+
+    setTimeout(() => {
+      navigate("/confirmation");
+    }, 2000);
+  };
+
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif", paddingBottom: "6rem" }}>
       <h2 style={{ color: colors.primary }}>Pagamento</h2>
 
       {/* Carrinho */}
-      <div style={{ marginTop: "2rem" }}>
+      <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
         {cartItems.map(item => (
-          <div key={item.id} style={{
-            display: "flex", justifyContent: "space-between",
-            alignItems: "center", padding: "1rem", marginBottom: "1rem",
-            border: `1px solid ${colors.secondary}`, borderRadius: "0.5rem"
-          }}>
-            <div>
-              <strong>{item.nome}</strong> x {item.qtd}
-            </div>
-            <div>R$ {(item.qtd * item.valor).toFixed(2)}</div>
-          </div>
+          <CardPayProduct
+            key={item.id}
+            produto={{
+              nome: item.nome,
+              qtd: item.qtd,
+              preco: item.valor,
+              imagem: item.imagem,
+              cor: "",
+              tamanho: ""
+            }}
+          />
         ))}
         <div style={{ textAlign: "right", fontWeight: "bold", marginTop: "1rem" }}>
           Total: R$ {total.toFixed(2)}
         </div>
       </div>
 
-      {/* Endereço */}
+      {/* Endereços */}
       <div style={{ marginTop: "2rem" }}>
         <h3>Endereço de Entrega</h3>
-        <div style={{
-          display: "flex", justifyContent: "space-between",
-          alignItems: "center", padding: "1rem",
-          border: `1px solid ${colors.secondary}`, borderRadius: "0.5rem"
-        }}>
-          <div>
-            {selectedEndereco.tipo} - {selectedEndereco.logradouro}, {selectedEndereco.numero} - {selectedEndereco.bairro}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          {userData.enderecos.map((endereco, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <input
+                type="radio"
+                name="endereco"
+                checked={selectedEndereco === endereco}
+                onChange={() => setSelectedEndereco(endereco)}
+              />
+              <CardEndereco endereco={endereco} />
+            </div>
+          ))}
+          <div style={{ textAlign: "right" }}>
+            <ModalItem tipo="endereco" />
           </div>
-          <ModalEnderecos />
         </div>
       </div>
 
-      {/* Cartão */}
+      {/* Cartões */}
       <div style={{ marginTop: "2rem" }}>
         <h3>Cartão de Pagamento</h3>
-        <div style={{
-          display: "flex", justifyContent: "space-between",
-          alignItems: "center", padding: "1rem",
-          border: `1px solid ${colors.secondary}`, borderRadius: "0.5rem"
-        }}>
-          <div>
-            {selectedCartao.bandeira} - {selectedCartao.numero}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          {userData.cartoes.map((cartao, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <input
+                type="radio"
+                name="cartao"
+                checked={selectedCartao === cartao}
+                onChange={() => setSelectedCartao(cartao)}
+              />
+              <CardCartao cartao={cartao} />
+            </div>
+          ))}
+          <div style={{ textAlign: "right" }}>
+            <ModalItem tipo="cartao" />
           </div>
-          <ModalCartoes cartao={selectedCartao} />
         </div>
       </div>
 
-      {/* Botão de finalizar */}
-      <div style={{ marginTop: "2rem", textAlign: "right" }}>
-        <Button style={{ background: colors.sucess, color: "#fff" }}>
+      {/* Botão Finalizar Compra fixo */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          backgroundColor: "#fff",
+          padding: "1rem 2rem",
+          textAlign: "right",
+          borderTop: "1px solid #ddd",
+          boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
+          zIndex: 1000,
+        }}
+      >
+        <button
+          onClick={handleFinalizar}
+          style={{
+            padding: "12px 24px",
+            backgroundColor: "#28a745", // verde
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            cursor: "pointer"
+          }}
+        >
           Finalizar Compra
-        </Button>
+        </button>
       </div>
     </div>
   );

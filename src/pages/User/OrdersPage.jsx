@@ -1,5 +1,6 @@
-import { colors } from "../styles/colors";
-import Sidebar from "../components/structures/sideBar";
+import { colors } from "../../styles/colors";
+import Sidebar from "../../components/structures/sideBar";
+import { useNavigate } from "react-router-dom";
 
 // dados simulados de pedidos
 const orders = [
@@ -30,8 +31,10 @@ const orders = [
 ];
 
 export default function OrdersPage() {
+  const navigate = useNavigate();
+
   const handleTrack = (product) => {
-    console.log("Rastrear:", product);
+    navigate(`/rastrear`);
   };
 
   const handleReturn = (product) => {
@@ -39,90 +42,108 @@ export default function OrdersPage() {
   };
 
   return (
-
     <div style={{ display: "flex", minHeight: "100vh", backgroundColor: colors.background }}>
+      {/* Sidebar fixa à esquerda */}
+      <Sidebar />
 
-    {/* Sidebar fixa à esquerda */}
-    <Sidebar />
-    <div style={{ padding: "20px", backgroundColor: colors.background }}>
+      {/* Conteúdo principal */}
+      <div
+        style={{
+          marginLeft: "220px", // espaço para a sidebar
+          flex: 1,
+          padding: "30px",
+        }}
+      >
+        <h2 style={{ color: "black", marginBottom: "25px", fontSize: "22px", fontWeight: "600" }}>
+          Meus Pedidos
+        </h2>
 
-      <h2 style={{ color: colors.primary, marginBottom: "20px" }}>Meus Pedidos</h2>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-        {orders.map((order) => (
-          <div
-            key={order.id}
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: "12px",
-              padding: "16px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              display: "flex",
-              gap: "20px",
-              alignItems: "center",
-            }}
-          >
-            {/* Imagem */}
-            <img
-              src={order.image}
-              alt={order.name}
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          {orders.map((order) => (
+            <div
+              key={order.id}
               style={{
-                width: "140px",
-                height: "140px",
-                objectFit: "cover",
-                borderRadius: "8px",
+                backgroundColor: "#fff",
+                borderRadius: "12px",
+                padding: "20px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+                display: "flex",
+                gap: "20px",
+                alignItems: "center",
+                transition: "transform 0.2s ease, box-shadow 0.2s ease",
               }}
-            />
+              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.1)")}
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.06)")}
+            >
+              {/* Imagem */}
+              <img
+                src={order.image}
+                alt={order.name}
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                  border: "1px solid #eee",
+                }}
+              />
 
-            {/* Infos do pedido */}
-            <div style={{ flex: 1 }}>
-              <h3 style={{ color: colors.text.primary, marginBottom: "6px" }}>
-                {order.name}
-              </h3>
-              <p style={{ color: colors.secondary, fontWeight: "bold" }}>
-                {order.price}
-              </p>
-              <p style={{ color: colors.text.primary, fontSize: "14px" }}>
-                Pedido: <strong>{order.orderNumber}</strong>
-              </p>
-              <p style={{ color: colors.text.primary, fontSize: "14px" }}>
-                Status: <span style={{ color: colors.status.success }}>{order.status}</span>
-              </p>
+              {/* Infos do pedido */}
+              <div style={{ flex: 1 }}>
+                <h3 style={{ color: colors.text.primary, marginBottom: "8px", fontSize: "18px", fontWeight: "600" }}>
+                  {order.name}
+                </h3>
+                <p style={{ color: colors.secondary, fontWeight: "bold", marginBottom: "6px" }}>
+                  {order.price}
+                </p>
+                <p style={{ color: colors.text.primary, fontSize: "14px", marginBottom: "4px" }}>
+                  Pedido: <strong>{order.orderNumber}</strong>
+                </p>
+                <p style={{ fontSize: "14px", marginBottom: "10px" }}>
+                  Status:{" "}
+                  <span style={{ fontWeight: "500", color: colors.status.success }}>
+                    {order.status}
+                  </span>
+                </p>
 
-              {/* Botões */}
-              <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
-                <button
-                  onClick={() => handleTrack(order)}
-                  style={{
-                    backgroundColor: colors.primary,
-                    color: colors.text.secondary,
-                    border: "none",
-                    padding: "8px 14px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Rastrear
-                </button>
-                <button
-                  onClick={() => handleReturn(order)}
-                  style={{
-                    backgroundColor: colors.status.error,
-                    color: colors.text.secondary,
-                    border: "none",
-                    padding: "8px 14px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Devolver
-                </button>
+                {/* Botões */}
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <button
+                    onClick={() => handleTrack(order)}
+                    style={{
+                      backgroundColor: "gray",
+                      color: "#fff",
+                      border: "none",
+                      padding: "10px 16px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Rastrear
+                  </button>
+                  <button
+                    onClick={() => handleReturn(order)}
+                    style={{
+                      backgroundColor: colors.status.error,
+                      color: "#fff",
+                      border: "none",
+                      padding: "10px 16px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Devolver
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
     </div>
   );
 }
